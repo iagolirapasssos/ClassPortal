@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salas de Aula</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div id="createRoom" class="card">
+            <h2>Criar Sala</h2>
+            <input type="text" id="roomName" placeholder="Nome da Sala">
+            <button id="createRoomBtn">Criar Sala</button>
+        </div>
+        <div id="enterRoom" class="card">
+            <h2>Entrar na Sala</h2>
+            <input type="text" id="roomCode" placeholder="Código da Sala">
+            <input type="text" id="studentName" placeholder="Seu Nome">
+            <button id="enterRoomBtn">Entrar na Sala</button>
+        </div>
+        <div id="roomContainer" class="hidden card">
+            <div id="roomInfo">
+                <h2 id="roomTitle"></h2>
+                <span id="roomCodeDisplay"></span>
+                <button id="logoutBtn" class="btn">Sair</button>
+            </div>
+            <div id="posts">
+                <!-- Posts serão inseridos aqui -->
+            </div>
+            <div id="postForm">
+                <textarea id="postText" placeholder="Digite sua publicação..."></textarea>
+                <input type="file" id="postImage" accept="image/*">
+                <button id="postBtn" class="btn">Publicar</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
