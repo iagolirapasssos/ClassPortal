@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentRoomCode = '';
     let currentRoom = null;
     let currentUser = null;
-    const userIp = localStorage.getItem('userIp') || 'IP-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    const userIp = localStorage.getItem('userIp') || `IP-${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
     
     localStorage.setItem('userIp', userIp);
     
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const postMeta = document.createElement('div');
         postMeta.className = 'post-meta';
         postMeta.innerHTML = `
-            <span>${new Date(post.date).toLocaleString()}</span>
+            <span>${new Date(post.date).toLocaleString('pt-BR')}</span>
             <span>Postado por: ${post.authorName || 'Desconhecido'}</span>
             <span>IP: ${post.authorIp || 'Desconhecido'}</span>
         `;
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname.endsWith('master.html')) {
         loadMasterPage();
     }
-
+    
     // Página da sala
     if (window.location.pathname.endsWith('room.html')) {
         const roomCode = localStorage.getItem('currentRoom');
