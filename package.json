@@ -1,0 +1,19 @@
+{
+  "name": "ClassPortal",
+  "version": "1.0.0",
+  "description": "Projeto de gerenciamento de salas",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "express": "^4.19.2",
+    "fs-extra": "^11.1.1",
+    "ip": "^2.0.1",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^10.0.0"
+  }
+}

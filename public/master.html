@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Mestre</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="card" id="masterRoomContainer">
+            <h2>Painel do Mestre</h2>
+            <button id="createNewRoomBtn" class="create-room-btn">Criar Nova Sala</button>
+            <div id="roomsList"></div>
+            <button id="logoutBtn" class="logout-btn">Sair</button>
+        </div>
+    </div>
+
+    <!-- Modal para criar nova sala -->
+    <div id="createRoomModal" class="modal">
+        <div class="modal-content">
+            <h3>Criar Nova Sala</h3>
+            <input type="text" id="newRoomNameInput" placeholder="Nome da Sala">
+            <div class="modal-buttons">
+                <button id="confirmCreateRoomBtn">Criar</button>
+                <button id="cancelCreateRoomBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
