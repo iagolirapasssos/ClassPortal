@@ -7,6 +7,15 @@ const os = require('os');
 const app = express();
 const port = 3000;
 const roomsDir = path.join(`${__dirname}/public`, 'rooms');
+const myip = '0.0.0.0'; // Escuta em todas as interfaces, ou você pode usar o IP específico
+const { v4: uuidv4 } = require('uuid'); // Adicione esta linha no início do arquivo
+
+app.use(express.json());
+app.use(express.static('public'));
+app.use('/rooms', express.static(path.join(__dirname, 'rooms')));
+app.use(express.urlencoded({ extended: true }));
+
+app.set('trust proxy', true); // Isso faz com que o Express confie nos cabeçalhos de proxy
 
 // Função para garantir que o diretório rooms exista
 function ensureRoomsDirExists() {
@@ -14,12 +23,6 @@ function ensureRoomsDirExists() {
         fs.mkdirSync(roomsDir, { recursive: true });
     }
 }
-
-app.use(express.json());
-app.use(express.static('public'));
-app.use('/rooms', express.static(path.join(__dirname, 'rooms')));
-
-app.set('trust proxy', true); // Isso faz com que o Express confie nos cabeçalhos de proxy
 
 // Função para obter o IP do usuário
 function getUserIP(req) {
@@ -118,6 +121,7 @@ app.post('/rooms/:roomCode/posts', upload.single('image'), (req, res) => {
         const roomData = JSON.parse(fs.readFileSync(roomPath));
         
         const post = {
+            id: uuidv4(),
             text,
             image: imageFile ? `data:${imageFile.mimetype};base64,${fs.readFileSync(imageFile.path, 'base64')}` : null,
             date: new Date(parseInt(timestamp)),
@@ -166,6 +170,53 @@ app.get('/get-room-list', (req, res) => {
     res.json(rooms);
 });
 
+// Endpoint para excluir uma postagem
+app.delete('/rooms/:roomCode/posts/:postId', (req, res) => {
+    const { roomCode, postId } = req.params;
+    console.log(`Código da sala: ${roomCode}`);
+    console.log(`ID da postagem: ${postId}`);
+
+    // Verificar se roomCode e postId são fornecidos
+    if (!roomCode || !postId) {
+        return res.status(400).send('Código da sala ou ID da postagem não fornecido');
+    }
+
+    // Caminho para o arquivo JSON da sala
+    const filePath = path.join(__dirname, 'public/rooms', roomCode + '.json');
+
+    // Ler o arquivo JSON
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Erro ao ler o arquivo:', err);
+            return res.status(500).send('Erro ao acessar o arquivo');
+        }
+
+        let roomData;
+        try {
+            roomData = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Erro ao parsear JSON:', parseError);
+            return res.status(500).send('Erro ao processar o JSON');
+        }
+
+        // Filtrar as postagens para remover a postagem com o ID fornecido
+        const updatedPosts = roomData.posts.filter(post => post.id !== postId);
+
+        // Atualizar o objeto da sala com as postagens filtradas
+        roomData.posts = updatedPosts;
+
+        // Salvar o arquivo JSON atualizado
+        fs.writeFile(filePath, JSON.stringify(roomData, null, 2), 'utf8', (writeErr) => {
+            if (writeErr) {
+                console.error('Erro ao salvar o arquivo:', writeErr);
+                return res.status(500).send('Erro ao salvar o arquivo');
+            }
+
+            res.status(200).send('Postagem excluída com sucesso');
+        });
+    });
+});
+
 // Excluir uma sala
 app.delete('/delete-room/:code', (req, res) => {
     const roomCode = req.params.code;
@@ -185,6 +236,10 @@ app.post('/logout', (req, res) => {
     res.json({ success: true });
 });
 
-app.listen(port, () => {
-    console.log(`Servidor rodando em http://localhost:${port}`);
+app.listen(port, myip, () => {
+  console.log(`Servidor rodando em http://${myip}:${port}`);
 });
+
+/*app.listen(port, () => {
+    console.log(`Servidor rodando em http://localhost:${port}`);
+});*/

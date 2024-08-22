@@ -52,9 +52,36 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="post-meta">
                                     <span>${new Date(post.date).toLocaleString()}</span>
                                     <span> - ${post.authorName} (${post.authorIp})</span>
+                                    ${post.authorIp === userIp ? `<button class="delete-post-btn" data-id="${post.id}">Excluir</button>` : ''}
                                 </div>
                             `;
                             postsDiv.appendChild(postDiv);
+                        });
+
+                        document.querySelectorAll('.delete-post-btn').forEach(button => {
+                            button.addEventListener('click', () => {
+                                const postId = button.getAttribute('data-id');
+
+                                const urlParams = new URLSearchParams(window.location.search);
+                                const roomCode = urlParams.get('code');
+
+                                fetch(`/rooms/${roomCode}/posts/${postId}`, {
+                                    method: 'DELETE',
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`Erro ${response.status}: ${response.statusText}`);
+                                    }
+                                    return response.text();
+                                })
+                                .then(message => {
+                                    console.log('Sucesso:', message);
+                                    // Atualizar a UI ou realizar outras ações após a exclusão
+                                })
+                                .catch(error => {
+                                    console.error('Erro ao excluir postagem:', error);
+                                });                                
+                            });
                         });
                     } else {
                         postsDiv.innerHTML = '<p>Nenhum post disponível.</p>';
@@ -64,21 +91,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
     function loadRoom(roomCode) {
         currentRoomCode = roomCode;
-        console.log(`roomCode: ${roomCode}`);
+        console.log(`Tentando carregar a sala com o código: ${roomCode}`);
 
         fetch(`/rooms/${roomCode}.json`)
             .then(response => {
+                console.log("Resposta da requisição de sala:", response);
                 if (response.ok) {
                     return response.json();
                 } else if (response.status === 404) {
-                    // Tratamento específico para erro 404
                     console.error(`Sala não encontrada: ${roomCode}`);
-                    window.location.href = 'index.html';
+                    window.location.href = 'index.html'; // Redireciona apenas se a sala não for encontrada
                     throw new Error('Sala não encontrada');
                 } else {
-                    // Para outros erros de resposta
                     return response.text().then(text => {
                         console.error('Erro ao carregar sala:', text);
                         throw new Error('Erro ao carregar sala');
@@ -87,15 +114,15 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(room => {
                 if (room) {
+                    console.log('Sala carregada com sucesso:', room);
                     document.getElementById('roomTitle').textContent = room.name;
-                    loadPosts(); // Certifique-se de que a função loadPosts está definida e funcionando corretamente
+                    loadPosts(); // Carrega os posts após carregar a sala
                 }
             })
             .catch(error => {
                 console.error('Erro ao carregar sala:', error);
             });
     }
-
 
     function checkExistingRoom() {
         fetch('/get-room-list')
@@ -186,19 +213,20 @@ document.addEventListener('DOMContentLoaded', () => {
             enterRoomBtn.addEventListener('click', () => {
                 const roomCode = roomCodeInput.value;
                 const studentName = studentNameInput.value;
+                
                 if (roomCode && studentName) {
-                    fetch(`/rooms/${roomCode}.json`)
-                        .then(response => response.json())
-                        .then(room => {
-                            if (room) {
-                                window.location.href = 'room.html';
+                    fetch(`/checkRoom/${roomCode}?username=${studentName}`)
+                        .then(response => {
+                            if (response.redirected) {
+                                window.location.href = `room.html?code=${roomCode}`;
                             } else {
-                                alert('Sala não encontrada.');
+                                alert('Erro ao entrar na sala.');
                             }
                         })
                         .catch(error => console.error('Erro ao entrar na sala:', error));
                 }
             });
+
 
             checkExistingRoom();
         })
