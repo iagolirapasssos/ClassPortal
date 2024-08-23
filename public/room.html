@@ -7,6 +7,38 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .drawing-tools i {
+            font-size: 24px; /* Tamanho dos ícones */
+            margin: 0 10px;
+            cursor: pointer;
+        }
+        #drawCanvas {
+            border: 1px solid #000;
+        }
+        #drawModal {
+            display: none; /* Inicialmente oculto */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        #drawModal .modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+        }
+        #canvasImageInput {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -26,11 +58,52 @@
                     <button id="postBtn">
                         <i class="fas fa-paper-plane"></i>
                     </button>
+                    <button id="drawBtn" class="draw-btn">
+                        <i class="fas fa-paint-brush"></i>
+                    </button>
                 </div>
             </div>
             <button id="logoutBtn" class="logout-btn">Sair da Sala</button>
+            
+            <!-- Modal de desenho -->
+            <div id="drawModal" class="modal">
+                <div class="modal-content">
+                    <span id="closeDrawModal" class="close-modal">&times;</span>
+                    <h2>Desenhe e pinte sua criação</h2>
+                    
+                    <!-- Canvas -->
+                    <canvas id="drawCanvas" width="500" height="400"></canvas>
+                    
+                    <!-- Ferramentas de desenho -->
+                    <div class="drawing-tools">
+                        <label for="colorPicker">
+                            <i class="fas fa-palette" title="Escolher Cor"></i>
+                        </label>
+                        <input type="color" id="colorPicker" value="#000000" style="display: none;">
+                        
+                        <i id="fillBtn" class="fas fa-fill" title="Preencher Fundo"></i>
+                        <i id="eraseBtn" class="fas fa-eraser" title="Borracha"></i>
+                        <i id="clearCanvasBtn" class="fas fa-trash" title="Limpar Canvas"></i>
+                        <label for="canvasImageInput">
+                            <i class="fas fa-upload" title="Carregar Imagem"></i>
+                        </label>
+                        <input type="file" id="canvasImageInput" accept="image/*">
+                        
+                        <i id="increaseBrushSize" class="fas fa-plus-circle" title="Aumentar Tamanho do Pincel"></i>
+                        <i id="decreaseBrushSize" class="fas fa-minus-circle" title="Diminuir Tamanho do Pincel"></i>
+                        <i id="increaseEraserSize" class="fas fa-plus-circle" title="Aumentar Tamanho da Borracha"></i>
+                        <i id="decreaseEraserSize" class="fas fa-minus-circle" title="Diminuir Tamanho da Borracha"></i>
+                    </div>
+
+                    <!-- Botão de salvar -->
+                    <button id="saveDrawingBtn">
+                        <i class="fas fa-save" title="Salvar Desenho"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

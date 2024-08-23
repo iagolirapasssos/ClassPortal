@@ -317,6 +317,19 @@ button:hover {
 }
 
 /* Estilos para o modal */
+.draw-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 50%;
+    padding: 15px;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -351,6 +364,14 @@ button:hover {
     border-radius: 8px;
     box-sizing: border-box;
     font-size: 16px;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
 }
 
 .modal-buttons {
@@ -466,3 +487,23 @@ button:hover {
 #postBtn:hover {
     background-color: var(--primary-color);
 }
+
+#drawBtn {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#drawBtn:hover {
+    background-color: var(--primary-color);
+}
+
+

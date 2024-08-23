@@ -22,6 +22,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmCreateRoomBtn = document.getElementById('confirmCreateRoomBtn');
     const cancelCreateRoomBtn = document.getElementById('cancelCreateRoomBtn');
 
+    //Fabric and modals
+    // Definindo variáveis de elementos do DOM
+    let canvas;
+    let isErasing = false;
+    let brushSize = 5;
+    let eraserSize = 20;
+
+    const drawBtn = document.getElementById('drawBtn');
+    const drawModal = document.getElementById('drawModal');
+    const closeDrawModal = document.getElementById('closeDrawModal');
+    const saveDrawingBtn = document.getElementById('saveDrawingBtn');
+    const clearCanvasBtn = document.getElementById('clearCanvasBtn');
+    const colorPicker = document.getElementById('colorPicker');
+    const fillBtn = document.getElementById('fillBtn');
+    const eraseBtn = document.getElementById('eraseBtn');
+    const increaseBrushSize = document.getElementById('increaseBrushSize');
+    const decreaseBrushSize = document.getElementById('decreaseBrushSize');
+    const increaseEraserSize = document.getElementById('increaseEraserSize');
+    const decreaseEraserSize = document.getElementById('decreaseEraserSize');
+    const canvasImageInput = document.getElementById('canvasImageInput');
+    const postImageInput = document.getElementById('postImage');
+
+    // Importa Fabric.js dinamicamente
+    const script = document.createElement('script');
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/fabric.js/6.3.0/fabric.min.js";
+    document.head.appendChild(script);
+
     let userIp = '';
     let currentRoomCode = '';
 
@@ -30,6 +57,219 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => data.ip);
     }
+
+    // FABRIC.js em room.html
+
+
+    // Inicializa o canvas para desenho
+    function setupCanvas() {
+        canvas = new fabric.Canvas('drawCanvas');
+        canvas.isDrawingMode = true;
+        canvas.freeDrawingBrush.color = colorPicker.value;
+        canvas.freeDrawingBrush.width = brushSize; // Espessura inicial do pincel
+    }
+
+    // Atualiza a cor do pincel
+    function setBrushColor(color) {
+        if (canvas) {
+            canvas.freeDrawingBrush.color = color;
+        }
+    }
+
+    // Alterna entre o modo de desenho e a borracha
+    function toggleEraser() {
+        isErasing = !isErasing;
+        canvas.freeDrawingBrush.color = isErasing ? '#ffffff' : colorPicker.value;
+        canvas.freeDrawingBrush.width = isErasing ? eraserSize : brushSize;
+    }
+
+    // Preenche áreas fechadas
+    function fillClosedAreas() {
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const color = colorPicker.value;
+
+        // Iterar sobre os objetos de caminho
+        canvas.getObjects('path').forEach(obj => {
+            const path = obj.path;
+            if (path && path.length > 0) {
+                ctx.beginPath();
+                path.forEach(command => {
+                    const [type, ...params] = command;
+                    switch (type) {
+                        case 'M':
+                            ctx.moveTo(...params);
+                            break;
+                        case 'L':
+                            ctx.lineTo(...params);
+                            break;
+                        case 'C':
+                            ctx.bezierCurveTo(...params);
+                            break;
+                        case 'Q':
+                            ctx.quadraticCurveTo(...params);
+                            break;
+                        case 'Z':
+                            ctx.closePath();
+                            break;
+                    }
+                });
+                ctx.fillStyle = color;
+                ctx.fill();
+            }
+        });
+
+        canvas.renderAll();
+    }
+
+    // Limpa o canvas
+    function clearCanvas() {
+        if (canvas) {
+            canvas.clear();
+        }
+    }
+
+    // Carrega uma imagem no canvas
+    function loadImageIntoCanvas(file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const imgObj = new Image();
+            imgObj.src = event.target.result;
+            imgObj.onload = function () {
+                const img = new fabric.Image(imgObj);
+                img.scaleToWidth(canvas.width);
+                img.scaleToHeight(canvas.height);
+                canvas.add(img);
+                canvas.renderAll();
+            };
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Abre o modal de desenho
+    if (drawBtn) {
+        drawBtn.addEventListener('click', () => {
+            drawModal.style.display = 'flex'; // Mostrar modal
+            if (!canvas) {
+                setupCanvas();
+            }
+        });
+    }
+
+    // Fecha o modal de desenho
+    if (closeDrawModal) {
+        closeDrawModal.addEventListener('click', () => {
+            drawModal.style.display = 'none';
+        });
+    }
+
+    if (colorPicker) {
+        colorPicker.addEventListener('change', () => {
+            setBrushColor(colorPicker.value);
+        });
+    }
+
+    if (eraseBtn) {
+        eraseBtn.addEventListener('click', () => {
+            toggleEraser();
+        });
+    }
+
+    if (fillBtn) {
+        fillBtn.addEventListener('click', () => {
+            fillClosedAreas();
+        });
+    }
+
+    if (clearCanvasBtn) {
+        clearCanvasBtn.addEventListener('click', () => {
+            clearCanvas();
+        });
+    }
+
+    if (increaseBrushSize) {
+        increaseBrushSize.addEventListener('click', () => {
+            brushSize += 5;
+            if (canvas) {
+                canvas.freeDrawingBrush.width = brushSize;
+            }
+        });
+    }
+
+    if (decreaseBrushSize) {
+        decreaseBrushSize.addEventListener('click', () => {
+            brushSize = Math.max(5, brushSize - 5);
+            if (canvas) {
+                canvas.freeDrawingBrush.width = brushSize;
+            }
+        });
+    }
+
+    if (increaseEraserSize) {
+        increaseEraserSize.addEventListener('click', () => {
+            eraserSize += 5;
+            if (isErasing) {
+                canvas.freeDrawingBrush.width = eraserSize;
+            }
+        });
+    }
+
+    if (decreaseEraserSize) {
+        decreaseEraserSize.addEventListener('click', () => {
+            eraserSize = Math.max(5, eraserSize - 5);
+            if (isErasing) {
+                canvas.freeDrawingBrush.width = eraserSize;
+            }
+        });
+    }
+
+    if (canvasImageInput) {
+        canvasImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                loadImageIntoCanvas(file);
+            }
+        });
+    }
+
+    // Função para converter Data URL para Blob
+    function dataURLtoBlob(dataURL) {
+        const byteString = atob(dataURL.split(',')[1]);
+        const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: mimeString });
+    }
+
+    // Salvar o desenho e anexá-lo ao input de arquivo
+    if (saveDrawingBtn) {
+        saveDrawingBtn.addEventListener('click', () => {
+            const drawingDataURL = canvas.toDataURL(); // Obter o desenho como Data URL
+            const drawingBlob = dataURLtoBlob(drawingDataURL); // Converter para Blob
+
+            // Criar um arquivo a partir do Blob e anexá-lo ao input de arquivo
+            const drawingFile = new File([drawingBlob], 'desenho.png', { type: 'image/png' });
+
+            // Criar um DataTransfer para simular o upload do arquivo no input
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(drawingFile);
+
+            // Anexar o arquivo ao campo de input de arquivo
+            postImageInput.files = dataTransfer.files;
+
+            // Fechar o modal
+            drawModal.style.display = 'none';
+
+            // Limpar o canvas após o envio
+            clearCanvas();
+        });
+    }
+    // FABRIC.js fim
+
 
     function loadPosts() {
         if (currentRoomCode) {
@@ -211,6 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
             enterRoomBtn.addEventListener('click', () => {
                 const roomCode = roomCodeInput.value;
                 const studentName = studentNameInput.value;
+                if (studentName) {
+                    localStorage.setItem('studentName', studentName);
+                }
                 
                 if (roomCode && studentName) {
                     fetch(`/checkRoom/${roomCode}?username=${studentName}`)
