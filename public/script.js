@@ -62,10 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             button.addEventListener('click', () => {
                                 const postId = button.getAttribute('data-id');
 
-                                const urlParams = new URLSearchParams(window.location.search);
-                                const roomCode = urlParams.get('code');
-
-                                fetch(`/rooms/${roomCode}/posts/${postId}`, {
+                                fetch(`/rooms/${currentRoomCode}/posts/${postId}`, {
                                     method: 'DELETE',
                                 })
                                 .then(response => {
@@ -76,7 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 })
                                 .then(message => {
                                     console.log('Sucesso:', message);
-                                    // Atualizar a UI ou realizar outras ações após a exclusão
+                                    // Atualiza a UI após a exclusão
+                                    loadPosts();
                                 })
                                 .catch(error => {
                                     console.error('Erro ao excluir postagem:', error);
