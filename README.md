@@ -32,8 +32,79 @@ ClassPortal:
 
 ### Requisitos
 
-- [Node.js](https://nodejs.org/) instalado na máquina.
+- [Node.js](https://nodejs.org/) 18 ou superior instalado na máquina.
 - [npm](https://www.npmjs.com/) (ou [yarn](https://yarnpkg.com/)) para gerenciamento de pacotes.
+
+### Instalação do Node.js 18 ou Superior
+
+#### No Linux
+
+1. **Atualize o índice de pacotes:**
+
+   ```bash
+   sudo apt update
+   ```
+
+2. **Instale as dependências necessárias:**
+
+   ```bash
+   sudo apt install curl
+   ```
+
+3. **Baixe e execute o instalador de Node.js:**
+
+   ```bash
+   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+   ```
+
+4. **Instale o Node.js e npm:**
+
+   ```bash
+   sudo apt install -y nodejs
+   ```
+
+5. **Verifique a instalação:**
+
+   ```bash
+   node -v
+   npm -v
+   ```
+
+#### No Windows
+
+1. **Baixe o instalador do Node.js** para Windows a partir do site oficial: [Node.js Downloads](https://nodejs.org/en/download/).
+
+2. **Execute o instalador** e siga as instruções na tela. Certifique-se de selecionar a opção para instalar o npm durante o processo.
+
+3. **Verifique a instalação** abrindo o Prompt de Comando e executando:
+
+   ```cmd
+   node -v
+   npm -v
+   ```
+
+#### No macOS
+
+1. **Use o Homebrew para instalar o Node.js:** Se você não tiver o Homebrew instalado, você pode instalá-lo a partir do site oficial: [Homebrew](https://brew.sh/).
+
+2. **Instale o Node.js com Homebrew:**
+
+   ```bash
+   brew install node@18
+   ```
+
+3. **Crie um link simbólico para o Node.js:**
+
+   ```bash
+   brew link --force --overwrite node@18
+   ```
+
+4. **Verifique a instalação:**
+
+   ```bash
+   node -v
+   npm -v
+   ```
 
 ### Passos de Instalação
 
