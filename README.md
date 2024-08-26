@@ -152,7 +152,7 @@ Se você estiver hospedando o projeto em um ambiente estático como GitHub Pages
 
 ## Licença
 
-Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está licenciado sob a licença Attribution-NonCommercial-NoDerivatives 4.0 International - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
